@@ -9,6 +9,7 @@ export class SongsService {
   }
 
   findAll() {
+    // throw new Error('Error in Db while fetching record');
     return `This action returns all songs`;
   }
 
