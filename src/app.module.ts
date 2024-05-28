@@ -8,6 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 import { Song } from './songs/entities/song.entity';
 import { Artist } from './artists/entities/artist.entity';
 import { User } from './users/entities/user.entity';
+import { PlaylistModule } from './playlist/playlist.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { User } from './users/entities/user.entity';
       synchronize: true,
     }),
     SongsModule,
+    PlaylistModule,
   ],
   controllers: [AppController],
   providers: [AppService],

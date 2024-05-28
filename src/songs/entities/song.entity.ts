@@ -1,9 +1,11 @@
 import { Artist } from 'src/artists/entities/artist.entity';
+import { Playlist } from 'src/playlist/entities/playlist.entity';
 import {
   Column,
   Entity,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -15,12 +17,6 @@ export class Song {
   @Column()
   title: string;
 
-  //   @Column('varchar', { array: true })
-  //   artists: string[];
-  @ManyToMany(() => Artist, (artist) => artist.songs, { cascade: true })
-  @JoinTable({ name: 'songs_artists' })
-  artists: Artist[];
-
   @Column('date')
   releasedDate: Date;
 
@@ -29,4 +25,15 @@ export class Song {
 
   @Column('text')
   lyrics: string;
+
+  //   @Column('varchar', { array: true })
+  //   artists: string[];
+  @ManyToMany(() => Artist, (artist) => artist.songs, { cascade: true })
+  @JoinTable({ name: 'songs_artists' })
+  artists: Artist[];
+  /**
+   * Many songs can belong to playlist for each unique user
+   */
+  @ManyToOne(() => Playlist, (playList) => playList.songs)
+  playList: Playlist;
 }
