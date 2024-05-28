@@ -9,6 +9,7 @@ import { Song } from './songs/entities/song.entity';
 import { Artist } from './artists/entities/artist.entity';
 import { User } from './users/entities/user.entity';
 import { PlaylistModule } from './playlist/playlist.module';
+import { Playlist } from './playlist/entities/playlist.entity';
 
 @Module({
   imports: [
@@ -20,7 +21,7 @@ import { PlaylistModule } from './playlist/playlist.module';
       port: parseInt(process.env.POSTGRES_PORT),
       username: process.env.POSTGRES_USER,
       password: process.env.POSTGRES_PASSWORD,
-      entities: [Song, Artist, User],
+      entities: [Song, Artist, User, Playlist],
       synchronize: true,
     }),
     SongsModule,
