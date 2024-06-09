@@ -16,6 +16,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
 
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/yarn
+          key: ${{ runner.os }}-yarn-${{ hashFiles('**/yarn.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-yarn-
+
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
@@ -27,9 +35,6 @@ jobs:
       - name: Run linters
         run: yarn lint
 
-      # - name: Run tests
-      #   run: yarn test
-
   build_and_push:
     needs: code_checks
     runs-on: ubuntu-latest
@@ -37,6 +42,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: ~/.docker
+          key: ${{ runner.os }}-docker-${{ hashFiles('**/Dockerfile') }}
+          restore-keys: |
+            ${{ runner.os }}-docker-
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -48,7 +61,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t ${{ secrets.DOCKER_USERNAME }}/nest-ci-cd:latest .
+        run: docker-compose build --pull --compress
 
       - name: Push Docker image
-        run: docker push ${{ secrets.DOCKER_USERNAME }}/nest-ci-cd:latest
+        run: docker-compose push

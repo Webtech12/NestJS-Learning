@@ -1,12 +1,12 @@
+version: '3.8'
+
 services:
   server:
     build:
       context: .
       dockerfile: Dockerfile
-    volumes:
-      - ./src:/usr/src/app/src
     environment:
-      NODE_ENV: production
+      NODE_ENV: ${NODE_ENV:-production}
     env_file:
       - .env
     ports:
@@ -25,7 +25,7 @@ services:
       - POSTGRES_DB=spotify
     container_name: postgres
     volumes:
-      - ./pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
     ports:
       - '5432:5432'
     networks:
@@ -49,6 +49,9 @@ services:
       - db
     networks:
       - app-network
+
+volumes:
+  pgdata:
 
 networks:
   app-network:

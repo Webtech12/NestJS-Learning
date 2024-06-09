@@ -1,0 +1,8 @@
+version: '3.8'
+
+services:
+  server:
+    volumes:
+      - ./src:/usr/src/app/src
+    environment:
+      NODE_ENV: development
