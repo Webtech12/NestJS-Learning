@@ -61,7 +61,9 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker-compose build
+        run: |
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/nest-ci-cd:latest .
+          docker tag ${{ secrets.DOCKER_USERNAME }}/nest-ci-cd:latest ${{ secrets.DOCKER_USERNAME }}/nest-ci-cd:latest
 
       - name: Push Docker image
-        run: docker-compose push
+        run: docker push ${{ secrets.DOCKER_USERNAME }}/nest-ci-cd:latest
