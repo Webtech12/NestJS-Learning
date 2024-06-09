@@ -61,7 +61,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker-compose build --pull --compress
+        run: docker-compose build --pull --compress --env-file ../.env
 
       - name: Push Docker image
         run: docker-compose push
