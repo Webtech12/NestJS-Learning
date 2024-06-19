@@ -12,6 +12,9 @@ import { PlaylistModule } from './playlist/playlist.module';
 import { Playlist } from './playlist/entities/playlist.entity';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
+import { ArtistsService } from './artists/artists.service';
+import { ArtistsController } from './artists/artists.controller';
+import { ArtistsModule } from './artists/artists.module';
 
 @Module({
   imports: [
@@ -36,9 +39,10 @@ import { UsersModule } from './users/users.module';
     PlaylistModule,
     AuthModule,
     UsersModule,
+    ArtistsModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ArtistsController],
+  providers: [AppService, ArtistsService],
 })
 export class AppModule {
   constructor(private dataSource: DataSource) {
