@@ -1,17 +1,21 @@
 import * as bcrypt from 'bcrypt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
-import { LoginDto } from './dto/login.dto';
+import { PassportStrategy } from '@nestjs/passport';
+import { Strategy } from 'passport-local';
+import { AuthService } from '../auth.service';
 import { UsersService } from 'src/users/users.service';
-import { JwtService } from '@nestjs/jwt';
+import { LoginDto } from '../dto/login.dto';
 
 @Injectable()
-export class AuthService {
+export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(
-    private userService: UsersService,
-    private jwtService: JwtService,
-  ) {}
+    private readonly authService: AuthService,
+    private readonly userService: UsersService,
+  ) {
+    super();
+  }
 
-  async login(LoginDto: LoginDto): Promise<{ access_token: string }> {
+  async validate(LoginDto: LoginDto): Promise<any> {
     const user = await this.userService.findOne(LoginDto);
     const passwordMatched = await bcrypt.compare(
       LoginDto.password,
@@ -19,9 +23,7 @@ export class AuthService {
     );
     if (passwordMatched) {
       delete user.password;
-      //   return user;
-      const payload = this.jwtService.sign({ email: user.email, sub: user.id });
-      return { access_token: payload };
+      return user;
     } else {
       throw new UnauthorizedException('Password does not match');
     }
