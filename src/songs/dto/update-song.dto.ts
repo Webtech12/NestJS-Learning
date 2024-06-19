@@ -10,13 +10,13 @@ import {
 export class UpdateSongDto {
   @IsString()
   @IsOptional()
-  readonly title;
+  readonly title: any;
 
   @IsOptional()
   @IsArray()
   //   @IsString({ each: true })
   @IsNumber({}, { each: true })
-  readonly artists;
+  readonly artists: any;
 
   @IsDateString()
   @IsOptional()

@@ -26,8 +26,6 @@ export class Song {
   @Column('text')
   lyrics: string;
 
-  //   @Column('varchar', { array: true })
-  //   artists: string[];
   @ManyToMany(() => Artist, (artist) => artist.songs, { cascade: true })
   @JoinTable({ name: 'songs_artists' })
   artists: Artist[];
