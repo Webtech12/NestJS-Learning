@@ -1,38 +1,53 @@
+# ARG for Node.js version
 ARG NODE_VERSION=20.13.1
 
-FROM node:${NODE_VERSION}-alpine
+# Build stage
+FROM node:${NODE_VERSION}-alpine AS builder
 
-# Use production node environment by default.
+# Set environment to production
 ENV NODE_ENV production
 
+# Set working directory
 WORKDIR /usr/src/app
 
 # Install the NestJS CLI globally
 RUN yarn global add @nestjs/cli
 
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.yarn to speed up subsequent builds.
-# Leverage a bind mount to package.json and yarn.lock to avoid having to copy them into
-# this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=yarn.lock,target=yarn.lock \
-    --mount=type=cache,target=/root/.yarn \
-    yarn install --production --frozen-lockfile
+# Install dependencies
+# Copy package.json and yarn.lock first to leverage Docker layer caching
+COPY package.json yarn.lock ./
 
-# Create the dist directory and set appropriate permissions
-RUN mkdir -p /usr/src/app/dist && chown -R node:node /usr/src/app
+# Install only production dependencies
+RUN yarn install --production --frozen-lockfile
 
-# Run the application as a non-root user.
-USER node
-
-# Copy the rest of the source files into the image.
+# Copy application source code
 COPY . .
-
-# Expose the port that the application listens on.
-EXPOSE 3000
 
 # Build the application
 RUN yarn build
 
-# Run the application.
-CMD [ "yarn", "start:prod" ] 
+# Production stage
+FROM node:${NODE_VERSION}-alpine
+
+# Set environment to production
+ENV NODE_ENV production
+
+# Set working directory
+WORKDIR /usr/src/app
+
+# Copy necessary files from the builder stage
+COPY --from=builder /usr/src/app/dist ./dist
+COPY --from=builder /usr/src/app/package.json ./package.json
+COPY --from=builder /usr/src/app/node_modules ./node_modules
+
+# Ensure production dependencies are installed
+RUN yarn install --production --frozen-lockfile
+
+# Set node user for security
+USER node
+
+# Expose the application port
+EXPOSE 3000
+
+# Start the application
+CMD ["node", "dist/main.js"]
